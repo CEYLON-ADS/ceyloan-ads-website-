@@ -384,6 +384,8 @@ const LoginRegisterForm: React.FC = () => {
     );
 };
 
+export default LoginRegisterForm;
+
 // import { useNavigate, useSearchParams } from "react-router-dom";
 // import { sendOTP } from "../services/sendOTP.ts";
 // import { isAuthenticated, isVerified } from "../interceptor/interceptor.ts";

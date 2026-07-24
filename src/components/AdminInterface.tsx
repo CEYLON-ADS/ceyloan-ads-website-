@@ -4,13 +4,15 @@ import advertisementByUserService, { type GeneralAdvertisement, type GeneralAdve
 import { getUserId } from "../services/verifyOTP.ts";
 
 // Loading states enum for better state management
-enum LoadingState {
-    IDLE = 'idle',
-    LOADING = 'loading',
-    SEARCHING = 'searching',
-    DELETING = 'deleting',
-    UPDATING = 'updating'
-}
+const LoadingState = {
+    IDLE: 'idle',
+    LOADING: 'loading',
+    SEARCHING: 'searching',
+    DELETING: 'deleting',
+    UPDATING: 'updating'
+} as const;
+
+type LoadingState = typeof LoadingState[keyof typeof LoadingState];
 
 interface PaginationInfo {
     currentPage: number;
