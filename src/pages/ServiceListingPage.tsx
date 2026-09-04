@@ -367,9 +367,16 @@ export default function ServiceListingCard() {
                     <h3 className="text-lg font-bold text-gray-900 mb-3 border-b border-gray-200 pb-2">
                         Description & Details
                     </h3>
-                    <div className="text-gray-700 text-sm whitespace-pre-line leading-relaxed">
-                        {ad.description || 'No detailed description provided for this advertisement.'}
-                    </div>
+                    {ad.description ? (
+                        <div
+                            className="text-gray-700 text-sm leading-relaxed space-y-2 [&_p]:mb-2 [&_span]:inline"
+                            dangerouslySetInnerHTML={{ __html: ad.description }}
+                        />
+                    ) : (
+                        <div className="text-gray-700 text-sm leading-relaxed">
+                            No detailed description provided for this advertisement.
+                        </div>
+                    )}
                 </div>
 
                 {/* Listing Metadata */}

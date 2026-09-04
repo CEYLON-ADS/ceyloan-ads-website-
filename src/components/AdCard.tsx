@@ -2,6 +2,7 @@ import {Heart, ThumbsUp, ChevronLeft, ChevronRight} from 'lucide-react';
 import {useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import type {Advertisement} from "../services/advertisment/getAllAdvertisements.ts";
+import {stripHtml} from "../utils/htmlUtils.ts";
 
 interface AdCardProps {
     advertisements?: Advertisement[]
@@ -171,7 +172,7 @@ export default function AdCard({advertisements = []}: AdCardProps) {
                                     </div>
 
                                     <p className="text-xs text-gray-600 mb-3 leading-relaxed line-clamp-2">
-                                        {card.advertisement.description || 'No description available'}
+                                        {stripHtml(card.advertisement.description) || 'No description available'}
                                     </p>
 
                                     <div className="flex gap-2 mb-3 flex-wrap">

@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { stripHtml } from "../utils/htmlUtils.ts";
 
 interface MyAdCardProps {
     id: string;
@@ -169,8 +170,8 @@ console.log("id is", id)
                 </div>
 
                 {/* Mobile Description */}
-                <p className="text-gray-600 text-sm mb-3 line-clamp-3" title={description}>
-                    {description}
+                <p className="text-gray-600 text-sm mb-3 line-clamp-3" title={stripHtml(description)}>
+                    {stripHtml(description)}
                 </p>
 
                 {/* Mobile Stats */}
@@ -331,8 +332,8 @@ console.log("id is", id)
                         <h3 className="font-semibold text-gray-900 mb-1 text-sm sm:text-base" title={title}>
                             {title}
                         </h3>
-                        <p className="text-gray-600 text-sm mb-3 line-clamp-2" title={description}>
-                            {description}
+                        <p className="text-gray-600 text-sm mb-3 line-clamp-2" title={stripHtml(description)}>
+                            {stripHtml(description)}
                         </p>
 
                         <div className="flex items-center gap-6 text-sm mb-3">
