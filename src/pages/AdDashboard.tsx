@@ -62,21 +62,11 @@ const AdTypeSelection: React.FC = () => {
 
 
     const handleAdTypeSelect = (category: CategoryResponseDTO) => {
-
         setSelectedAdType(category.propertyId);
         setCurrentAdType(category.categoryName);
         setSelectedCategoryId(category.propertyId);
-        setSelectedCategoryName(category.categoryName)// Store the category ID
-        console.log("Selected ad type:", category);
-
-        // Show form for Girls Personal, others can be handled later
-        if (category.categoryName === "Girls Personal") {
-            setShowAdForm(true);
-        }
-        else if (category.categoryName === "Live Cam") {
-            setShowAdForm(true);
-        }
-
+        setSelectedCategoryName(category.categoryName);
+        setShowAdForm(true);
     };
 
     const handleTabClick = (tab: string) => {
@@ -180,7 +170,7 @@ const AdTypeSelection: React.FC = () => {
                 );
             case "New Ad":
                 // Show form if ad type is selected and it's Girls Personal
-                if (showAdForm && currentAdType === "Girls Personal" || currentAdType === "Live Cam") {
+                if (showAdForm && selectedCategoryId) {
                     return (
                         <div className="p-6">
                             <div className="mb-4">
