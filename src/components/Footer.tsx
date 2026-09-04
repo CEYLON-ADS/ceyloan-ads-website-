@@ -25,6 +25,7 @@ export default function Footer() {
             case 'Refund Policy':
                 navigate('/refund-policy');
                 break;
+            case 'Queenslanka Ads':
             case 'Ceylon Ads':
                 navigate('/ceylon-ads');
                 break;
@@ -47,7 +48,7 @@ export default function Footer() {
         'FAQ',
         'Service',
         'Refund Policy',
-        'Ceylon Ads',
+        'Queenslanka Ads',
         'Ad Prices',
         'Ads Type'
     ];
@@ -130,7 +131,7 @@ export default function Footer() {
                         href="#"
                         className="text-blue-400 hover:text-blue-300 underline text-sm"
                     >
-                        Hela-LankaAds.co on Google
+                        Queenslanka.com on Google
                     </a>
                 </div>
 
