@@ -6,7 +6,7 @@ import generalAdvertisementService, {
 import cityService, {type CityResponseDTO} from "../services/city/cityService";
 import {useAdvertiseTypes} from "../hooks/useAdvertiseTypes";
 import {type AdvertiseTypeResponseDTO} from "../services/adType/adTypeService";
-import {getUserId} from "../services/verifyOTP.ts";
+import {getUserId, getUserIdFromToken} from "../services/verifyOTP.ts";
 
 interface AdFormProps {
     phoneNumber: string | null | undefined,
@@ -16,12 +16,13 @@ interface AdFormProps {
 
 const AdForm = ({phoneNumber, categoryID, categoryName}: AdFormProps) => {
     const {advertiseTypes, loading: typesLoading, error: typesError} = useAdvertiseTypes();
-    const userId: string | null = getUserId();
+    const userId: string | null = getUserId() || getUserIdFromToken();
     console.log('Form props:', {userId, categoryID, phoneNumber});
 
     const removeCountryCode = (phone: any): any => {
+        if (!phone) return "";
         const countryCodes = ["94", "+44", "+91", "+86", "+33", "+49", "+81"];
-        let cleanNumber = phone.trim();
+        let cleanNumber = String(phone).trim();
 
         for (const code of countryCodes) {
             if (cleanNumber.startsWith(code)) {
