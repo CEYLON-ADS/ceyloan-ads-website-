@@ -67,3 +67,36 @@ export const logout = () => {
     clearAuthData();
     window.location.href = '/loginpage';
 };
+
+// Get user roles from JWT token
+export const getUserRoles = (): string[] => {
+    const token = localStorage.getItem('authToken') ||
+        sessionStorage.getItem('authToken') ||
+        Cookies.get('authToken');
+    if (!token) return [];
+
+    try {
+        const payloadBase64 = token.split('.')[1];
+        if (!payloadBase64) return [];
+        const decodedJson = atob(payloadBase64.replace(/-/g, '+').replace(/_/g, '/'));
+        const payload = JSON.parse(decodedJson);
+        return payload.roles || [];
+    } catch (e) {
+        console.error("Failed to decode JWT roles:", e);
+        return [];
+    }
+};
+
+// Check if user is an Ads Agent
+export const isAdsAgent = (): boolean => {
+    const roles = getUserRoles();
+    return roles.includes('ADS_AGENT');
+};
+
+// Get Primary User Role
+export const getUserPrimaryRole = (): 'ADMIN' | 'ADS_AGENT' | 'PUBLIC_USER' => {
+    const roles = getUserRoles();
+    if (roles.includes('ADMIN')) return 'ADMIN';
+    if (roles.includes('ADS_AGENT')) return 'ADS_AGENT';
+    return 'PUBLIC_USER';
+};
