@@ -13,7 +13,7 @@ const Navbar = () => {
         <nav className="bg-teal-600 shadow-md">
             <div className="mx-auto px-4 py-2 flex justify-between items-center">
                 {/* Logo / Brand */}
-                <h1 className="text-white font-semibold italic text-lg sm:text-xl">Ceylon-ad</h1>
+                <h1 className="text-white font-semibold italic text-lg sm:text-xl">Queenslanka.com</h1>
 
                 {/* Buttons */}
                 <div className="flex gap-2 sm:gap-3 ">

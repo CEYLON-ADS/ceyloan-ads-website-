@@ -137,7 +137,7 @@ export default function Footer() {
                 {/* Copyright */}
                 <div className="text-center text-sm">
                     <span>© Copyright 2025 </span>
-                    <span className="text-red-400">Ceylon-ad</span>
+                    <span className="text-red-400">Queenslanka.com</span>
                     <span> All Rights Reserved.</span>
                 </div>
             </div>
