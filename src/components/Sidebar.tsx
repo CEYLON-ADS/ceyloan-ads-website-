@@ -34,25 +34,27 @@ const Sidebar: React.FC = () => {
 
     // Function to map category names to routes
     const getCategoryRoute = (categoryName: string, propertyId:string): string => {
-        console.log(propertyId);
         const routeMap: Record<string, string> = {
             'Girls Personal': `/girlspersonal?categoryId=${propertyId}`,
-            'Services': '/servicescategory',
+            'GirlsPersonal': `/girlspersonal?categoryId=${propertyId}`,
+            'Services': `/servicescategory?categoryId=${propertyId}`,
             'Live Cam': `/livecam?categoryId=${propertyId}`,
-            'Spa': '/spa',
-            'Chat': '/chat',
-            'BoysPersonal': '/boyspersonal',
-            'Shemale': '/shemale',
-            'Rent': '/rent',
-            'Sale': '/sale',
-            'ToysAccessories': '/toysaccessories',
-            'Medicine': '/medicine',
-            'Rooms': '/rooms',
-            'LankanJobs': '/lankanjobs'
+            'LiveCam': `/livecam?categoryId=${propertyId}`,
+            'Spa': `/spa?categoryId=${propertyId}`,
+            'Chat': `/chat?categoryId=${propertyId}`,
+            'BoysPersonal': `/boyspersonal?categoryId=${propertyId}`,
+            'Boys Personal': `/boyspersonal?categoryId=${propertyId}`,
+            'Shemale': `/shemale?categoryId=${propertyId}`,
+            'Rent': `/rent?categoryId=${propertyId}`,
+            'Sale': `/sale?categoryId=${propertyId}`,
+            'ToysAccessories': `/toysaccessories?categoryId=${propertyId}`,
+            'Medicine': `/medicine?categoryId=${propertyId}`,
+            'Rooms': `/rooms?categoryId=${propertyId}`,
+            'LankanJobs': `/lankanjobs?categoryId=${propertyId}`
         };
 
-        // Find the matching route or use a default
-        return routeMap[categoryName] || `/category/${categoryName.toLowerCase()}`;
+        // Find the matching route or use generic category route with categoryId
+        return routeMap[categoryName] || `/category/${encodeURIComponent(categoryName.toLowerCase())}?categoryId=${propertyId}`;
     };
 
     // Default categories in case API fails

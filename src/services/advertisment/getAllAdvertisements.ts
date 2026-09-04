@@ -90,3 +90,24 @@ export const searchAdvertisementsByCategory = async (
         throw error;
     }
 };
+
+/**
+ * Get single advertisement by ID
+ * @param {string} adId - Advertisement UUID
+ * @returns {Promise<Advertisement>} Promise with advertisement data
+ */
+export const getAdvertisementById = async (adId: string): Promise<Advertisement> => {
+    try {
+        const response = await api.get(`${API_BASE_URL}advertisements/${adId}`);
+        const data: StandardResponseDTO<Advertisement> = response.data;
+
+        if (data.code !== 200) {
+            throw new Error(data.message || 'Failed to fetch advertisement');
+        }
+
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching advertisement by ID:', error);
+        throw error;
+    }
+};

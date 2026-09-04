@@ -31,6 +31,8 @@ import LankanJobs from "./pages/LankanJobs/LankanJobs.tsx";
 import Chat from "./pages/chat/Chat.tsx";
 import AuthGuard from "./interceptor/AuthGuard.tsx";
 
+import CategoryPage from "./pages/CategoryPage.tsx";
+
 export default function AppRoutes() {
     return (
         <Router>
@@ -81,7 +83,9 @@ export default function AppRoutes() {
                     <Route path="/rooms" element={<Rooms/>} />
                     <Route path="/lankanjobs" element={<LankanJobs/>} />
 
-
+                    {/* Dynamic Category Route */}
+                    <Route path="/category/:categoryName" element={<CategoryPage />} />
+                    <Route path="/category" element={<CategoryPage />} />
 
                 </Route>
             </Routes>
