@@ -805,7 +805,8 @@ export default function AdminInterface() {
                             likes={ad.allLikes || 0}
                             views={ad.allViews || 0}
                             phone={ad.userMobileNumber || ""}
-                            whatsapp={ad.whatsapp ? "Available" : "Not Available"}
+                            whatsapp={ad.whatsapp}
+                            whatsappNumber={ad.whatsappNumber}
                             image={ad.imageUrls && ad.imageUrls.length > 0 ? ad.imageUrls[0].url : ""}
                             status={"active"} // Not available in API response
                             adType={ad.categoryName}

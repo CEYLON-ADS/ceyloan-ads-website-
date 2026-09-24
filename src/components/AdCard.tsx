@@ -165,7 +165,6 @@ export default function AdCard({advertisements = []}: AdCardProps) {
                                                 {card.advertisement.title}
                                             </h3>
                                             <p className="text-xs text-gray-600 mt-1">
-                                                {card.advertisement.userMobileNumber || 'Unknown number'}
                                                 {card.advertisement.userId ? ` (${card.advertisement.userId.slice(0, 8)})` : ''} 🌹
                                             </p>
                                         </div>

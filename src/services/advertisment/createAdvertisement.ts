@@ -11,9 +11,13 @@ const API_ENDPOINT = import.meta.env.VITE_API_BASE_URL;
 interface GeneralAdvertisementRequestData {
     title: string;
     whatsapp: boolean;
+    whatsappNumber: string;
     telegram: boolean;
+    telegramNumber: string;
     viber: boolean;
+    viberNumber: string;
     imo: boolean;
+    imoNumber: string;
     categoryID: string;
     cityIds?: string[];
     userId: string;
@@ -73,9 +77,13 @@ class GeneralAdvertisementService {
             // Append all fields
             formData.append('title', advertisementData.title);
             formData.append('whatsapp', advertisementData.whatsapp.toString());
+            if (advertisementData.whatsappNumber) formData.append('whatsappNumber', advertisementData.whatsappNumber);
             formData.append('telegram', advertisementData.telegram.toString());
+            if (advertisementData.telegramNumber) formData.append('telegramNumber', advertisementData.telegramNumber);
             formData.append('viber', advertisementData.viber.toString());
+            if (advertisementData.viberNumber) formData.append('viberNumber', advertisementData.viberNumber);
             formData.append('imo', advertisementData.imo.toString());
+            if (advertisementData.imoNumber) formData.append('imoNumber', advertisementData.imoNumber);
             formData.append('categoryID', advertisementData.categoryID);
             formData.append('userId', advertisementData.userId);
             formData.append('adType', advertisementData.adType);

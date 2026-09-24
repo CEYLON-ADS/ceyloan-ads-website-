@@ -43,9 +43,13 @@ const AdForm = ({phoneNumber, categoryID, categoryName}: AdFormProps) => {
         countryCode: "+94",
         description: "",
         whatsapp: false,
+        whatsappNumber: "",
         telegram: false,
+        telegramNumber: "",
         imo: false,
+        imoNumber: "",
         viber: false,
+        viberNumber: "",
     });
 
     const [images, setImages] = useState<File[]>([]);
@@ -114,9 +118,13 @@ const AdForm = ({phoneNumber, categoryID, categoryName}: AdFormProps) => {
             const advertisementData: GeneralAdvertisementRequestData = {
                 title: formData.title,
                 whatsapp: formData.whatsapp,
+                whatsappNumber: formData.whatsappNumber,
                 telegram: formData.telegram,
+                telegramNumber: formData.telegramNumber,
                 viber: formData.viber,
+                viberNumber: formData.viberNumber,
                 imo: formData.imo,
+                imoNumber: formData.imoNumber,
                 categoryID: categoryID,
                 cityIds: formData.location ? [formData.location] : [],
                 userId: userId,
@@ -147,9 +155,13 @@ const AdForm = ({phoneNumber, categoryID, categoryName}: AdFormProps) => {
                     countryCode: "+94",
                     description: "",
                     whatsapp: false,
+                    whatsappNumber: "",
                     telegram: false,
+                    telegramNumber: "",
                     imo: false,
+                    imoNumber: "",
                     viber: false,
+                    viberNumber: "",
                 });
                 setImages([]);
                 setSelectedCity(null);
@@ -543,42 +555,89 @@ const AdForm = ({phoneNumber, categoryID, categoryName}: AdFormProps) => {
 
             {/* Platform Availability */}
             <div className="grid grid-cols-2 gap-4">
-                <label className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={formData.whatsapp}
-                        onChange={(e) => handleInputChange("whatsapp", e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">Phone Number Available on WhatsApp</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={formData.telegram}
-                        onChange={(e) => handleInputChange("telegram", e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">Phone Number Available on Telegram</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={formData.imo}
-                        onChange={(e) => handleInputChange("imo", e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">Phone Number Available on IMO</span>
-                </label>
-                <label className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        checked={formData.viber}
-                        onChange={(e) => handleInputChange("viber", e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm text-gray-700">Phone Number Available on Viber</span>
-                </label>
+                <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={formData.whatsapp}
+                            onChange={(e) => handleInputChange("whatsapp", e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Phone Number Available on WhatsApp</span>
+                    </label>
+                    {formData.whatsapp && (
+                        <input
+                            type="tel"
+                            value={formData.whatsappNumber}
+                            onChange={(e) => handleInputChange("whatsappNumber", e.target.value)}
+                            placeholder="WhatsApp Number"
+                            className="w-full p-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={formData.telegram}
+                            onChange={(e) => handleInputChange("telegram", e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Phone Number Available on Telegram</span>
+                    </label>
+                    {formData.telegram && (
+                        <input
+                            type="tel"
+                            value={formData.telegramNumber}
+                            onChange={(e) => handleInputChange("telegramNumber", e.target.value)}
+                            placeholder="Telegram Number"
+                            className="w-full p-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={formData.imo}
+                            onChange={(e) => handleInputChange("imo", e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Phone Number Available on IMO</span>
+                    </label>
+                    {formData.imo && (
+                        <input
+                            type="tel"
+                            value={formData.imoNumber}
+                            onChange={(e) => handleInputChange("imoNumber", e.target.value)}
+                            placeholder="IMO Number"
+                            className="w-full p-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    )}
+                </div>
+
+                <div className="space-y-2">
+                    <label className="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            checked={formData.viber}
+                            onChange={(e) => handleInputChange("viber", e.target.checked)}
+                            className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        />
+                        <span className="text-sm text-gray-700">Phone Number Available on Viber</span>
+                    </label>
+                    {formData.viber && (
+                        <input
+                            type="tel"
+                            value={formData.viberNumber}
+                            onChange={(e) => handleInputChange("viberNumber", e.target.value)}
+                            placeholder="Viber Number"
+                            className="w-full p-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    )}
+                </div>
             </div>
 
             {/* Description */}

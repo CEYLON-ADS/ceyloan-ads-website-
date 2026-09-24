@@ -8,7 +8,8 @@ interface MyAdCardProps {
     likes?: number;
     views?: number;
     phone?: string;
-    whatsapp?: string;
+    whatsapp?: boolean;
+    whatsappNumber?: string;
     image?: string;
     status: string;
     adType: string;
@@ -27,7 +28,8 @@ function MyAdCard({
                       likes = 0,
                       views = 0,
                       phone = "",
-                      whatsapp = "",
+                      whatsapp = false,
+                      whatsappNumber = "",
                       image = "https://via.placeholder.com/400x300?text=No+Image",
                       status,
                       adType,
@@ -192,7 +194,7 @@ console.log("id is", id)
                 </div>
 
                 {/* Mobile Contact */}
-                {(phone || whatsapp) && (
+                {(phone || (whatsapp && whatsappNumber)) && (
                     <div className="p-2 bg-blue-50 rounded-md text-xs text-gray-600 mb-3 border border-blue-200">
                         <div className="space-y-1">
                             {phone && (
@@ -203,13 +205,13 @@ console.log("id is", id)
                                     <span>Phone: {phone}</span>
                                 </div>
                             )}
-                            {whatsapp && (
+                            {whatsapp && whatsappNumber && (
                                 <div className="flex items-center">
                                     <svg className="w-3 h-3 mr-2 text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                         <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981z"/>
                                         <path d="M.109 24l1.654-6.053c-1.013-1.759-1.548-3.748-1.547-5.795.003-6.398 5.2-11.594 11.602-11.594 3.101.001 6.016 1.21 8.206 3.403 2.19 2.193 3.396 5.111 3.395 8.208-.003 6.399-5.2 11.595-11.601 11.595-1.943-.001-3.853-.486-5.548-1.414l-6.161 1.65zm6.441-3.718c1.636.973 3.194 1.554 5.262 1.555 5.31 0 9.639-4.325 9.642-9.635.002-5.328-4.307-9.644-9.634-9.646-5.317 0-9.641 4.325-9.643 9.633-.001 2.169.633 3.794 1.704 5.498l-.975 3.565 3.644-.97z"/>
                                     </svg>
-                                    <span>WhatsApp: {whatsapp}</span>
+                                    <span>WhatsApp: {whatsappNumber}</span>
                                 </div>
                             )}
                         </div>
@@ -355,7 +357,7 @@ console.log("id is", id)
                 </div>
 
                 {/* Contact Information */}
-                {(phone || whatsapp) && (
+                {(phone || (whatsapp && whatsappNumber)) && (
                     <div className="p-3 bg-blue-50 rounded-md mb-4 border border-blue-200">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 text-sm text-gray-600">
                             {phone && (

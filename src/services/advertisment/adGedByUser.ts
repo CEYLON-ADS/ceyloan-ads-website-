@@ -12,9 +12,13 @@ export interface GeneralAdvertisement {
     title: string;
     activeStatus: boolean;
     whatsapp: boolean;
+    whatsappNumber: string;
     telegram: boolean;
+    telegramNumber: string;
     imo: boolean;
+    imoNumber: string;
     viber: boolean;
+    viberNumber: string;
     isFake: boolean;
     cities: string[];
     imageUrls: ImageUrl[];
