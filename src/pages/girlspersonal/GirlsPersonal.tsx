@@ -2,7 +2,7 @@ import AdCard from "../../components/AdCard.tsx";
 import {useEffect, useState} from "react";
 import {Plus, Target} from "lucide-react";
 import { useSearchParams } from "react-router-dom";
-import { searchAdvertisementsByCategory, type Advertisement, type PaginatedAdvertisementResponse } from "../../services/advertisment/getAllAdvertisements.ts";
+import { searchAdvertisementsByCategory, searchAllAdvertisements, type Advertisement, type PaginatedAdvertisementResponse } from "../../services/advertisment/getAllAdvertisements.ts";
 
 const GirlsPersonal = () => {
     const [currentSlide, setCurrentSlide] = useState<number>(0);
@@ -16,17 +16,16 @@ const GirlsPersonal = () => {
 
     // Fetch advertisements by category using the service
     const fetchAdvertisementsByCategory = async () => {
-        if (!categoryId) {
-            setError('Category ID is required');
-            setLoading(false);
-            return;
-        }
-
         try {
             setLoading(true);
             setError('');
 
-            const response: PaginatedAdvertisementResponse = await searchAdvertisementsByCategory(categoryId, '', 0, 10);
+            let response: PaginatedAdvertisementResponse;
+            if (categoryId) {
+                response = await searchAdvertisementsByCategory(categoryId, '', 0, 10);
+            } else {
+                response = await searchAllAdvertisements('', 0, 10);
+            }
 
             // Check if response has dataList property (the actual ads array)
             const adsArray = response.dataList || [];
@@ -83,9 +82,7 @@ const GirlsPersonal = () => {
 
     // Fetch data on component mount or when categoryId changes
     useEffect(() => {
-        if (categoryId) {
-            fetchAdvertisementsByCategory();
-        }
+        fetchAdvertisementsByCategory();
     }, [categoryId]);
 
     // Refresh data function
@@ -93,17 +90,7 @@ const GirlsPersonal = () => {
         fetchAdvertisementsByCategory();
     };
 
-    if (!categoryId) {
-        return (
-            <div className="flex justify-center items-center h-64">
-                <div className="text-red-500 text-center">
-                    <p className="text-lg font-semibold">Category ID is missing</p>
-                    <p className="text-sm text-gray-600 mt-2">Please navigate from the sidebar to view category ads</p>
-                </div>
-            </div>
-        );
-    }
-
+    // Removed the "Category ID is missing" error block to allow loading all ads by default.
     if (loading) {
         return (
             <div className="flex justify-center items-center h-64">
