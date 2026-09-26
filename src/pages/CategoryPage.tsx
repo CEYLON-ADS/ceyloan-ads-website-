@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import AdCard from '../components/AdCard.tsx';
 import { Plus, Target } from 'lucide-react';
-import { searchAdvertisementsByCategory, type Advertisement, type PaginatedAdvertisementResponse } from '../services/advertisment/getAllAdvertisements.ts';
+import { searchAdvertisementsByCategory, searchAllAdvertisements, type Advertisement, type PaginatedAdvertisementResponse } from '../services/advertisment/getAllAdvertisements.ts';
 import categoryService, { type CategoryResponseDTO } from '../services/category/CategoryService.ts';
 
 const CategoryPage: React.FC = () => {
@@ -20,23 +20,31 @@ const CategoryPage: React.FC = () => {
     const [images, setImages] = useState<string[]>([]);
     const [hasImages, setHasImages] = useState<boolean>(false);
 
+    // 2. We use a separate effect that only triggers when category resolution is complete.
+    // We can use a ref or a specific state to track if resolution is done.
+    const [isCategoryResolved, setIsCategoryResolved] = useState<boolean>(false);
+
     // Resolve Category ID and Title
     useEffect(() => {
         const resolveCategory = async () => {
             setLoading(true);
             setError('');
+            setIsCategoryResolved(false);
 
             const paramCatId = searchParams.get('categoryId');
 
             if (paramCatId) {
                 setResolvedCategoryId(paramCatId);
                 setDisplayTitle(categoryName ? decodeURIComponent(categoryName) : 'Category');
+                setIsCategoryResolved(true);
                 return;
             }
 
             if (!categoryName) {
-                setError('Category not specified');
-                setLoading(false);
+                // If no category is specified, we'll fetch all advertisements
+                setResolvedCategoryId(null);
+                setDisplayTitle('All Advertisements');
+                setIsCategoryResolved(true);
                 return;
             }
 
@@ -47,6 +55,7 @@ const CategoryPage: React.FC = () => {
             const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             if (uuidPattern.test(rawName)) {
                 setResolvedCategoryId(rawName);
+                setIsCategoryResolved(true);
                 return;
             }
 
@@ -72,19 +81,26 @@ const CategoryPage: React.FC = () => {
             } catch (err) {
                 console.error('Failed to resolve category:', err);
                 // If API fails, check if rawName itself might be usable or show notice
+            } finally {
+                setIsCategoryResolved(true);
             }
         };
 
         resolveCategory();
     }, [categoryName, searchParams]);
 
-    // Fetch advertisements once resolvedCategoryId is available
-    const fetchAdvertisements = async (catId: string) => {
+    // Fetch advertisements once resolvedCategoryId is available or if it's explicitly null
+    const fetchAdvertisements = async (catId: string | null) => {
         try {
             setLoading(true);
             setError('');
 
-            const response: PaginatedAdvertisementResponse = await searchAdvertisementsByCategory(catId, '', 0, 20);
+            let response: PaginatedAdvertisementResponse;
+            if (catId) {
+                response = await searchAdvertisementsByCategory(catId, '', 0, 20);
+            } else {
+                response = await searchAllAdvertisements('', 0, 20);
+            }
             const adsArray = response?.dataList || [];
             setAdvertisements(adsArray);
 
@@ -110,13 +126,10 @@ const CategoryPage: React.FC = () => {
     };
 
     useEffect(() => {
-        if (resolvedCategoryId) {
+        if (isCategoryResolved) {
             fetchAdvertisements(resolvedCategoryId);
-        } else if (!loading && !resolvedCategoryId && categoryName) {
-            // Category couldn't be resolved into a categoryId
-            setLoading(false);
         }
-    }, [resolvedCategoryId]);
+    }, [isCategoryResolved, resolvedCategoryId]);
 
     // Auto slide images if any
     useEffect(() => {
@@ -138,7 +151,7 @@ const CategoryPage: React.FC = () => {
         }
     };
 
-    const capitalizedTitle = displayTitle ? displayTitle.charAt(0).toUpperCase() + displayTitle.slice(1) : 'Category Advertisements';
+    const capitalizedTitle = displayTitle ? displayTitle.charAt(0).toUpperCase() + displayTitle.slice(1) : 'All Advertisements';
 
     if (loading) {
         return (

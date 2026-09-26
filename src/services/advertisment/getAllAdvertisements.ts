@@ -96,6 +96,45 @@ export const searchAdvertisementsByCategory = async (
 };
 
 /**
+ * Search all advertisements with optional search text
+ * @param {string} searchText - Optional search text to filter by title/description
+ * @param {number} page - Page number (default: 0)
+ * @param {number} size - Page size (default: 10)
+ * @returns {Promise<PaginatedAdvertisementResponse>} Promise with paginated advertisement data
+ */
+export const searchAllAdvertisements = async (
+    searchText: string = '',
+    page: number = 0,
+    size: number = 10
+): Promise<PaginatedAdvertisementResponse> => {
+    try {
+        const params: Record<string, string> = {
+            page: page.toString(),
+            size: size.toString()
+        };
+
+        if (searchText) {
+            params.searchText = searchText;
+        }
+
+        const response = await api.get(`${API_BASE_URL}advertisements/search`, {
+            params
+        });
+
+        const data: StandardResponseDTO<PaginatedAdvertisementResponse> = response.data;
+
+        if (data.code !== 200) {
+            throw new Error(data.message || 'Failed to fetch advertisements');
+        }
+
+        return data.data;
+    } catch (error) {
+        console.error('Error fetching all advertisements:', error);
+        throw error;
+    }
+};
+
+/**
  * Get single advertisement by ID
  * @param {string} adId - Advertisement UUID
  * @returns {Promise<Advertisement>} Promise with advertisement data
