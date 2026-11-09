@@ -40,8 +40,8 @@ const CategoryPage: React.FC = () => {
                 return;
             }
 
-            if (!categoryName) {
-                // If no category is specified, we'll fetch all advertisements
+            if (!categoryName || categoryName.toLowerCase() === 'all' || categoryName.toLowerCase() === 'all-ads') {
+                // If no category or 'all' is specified, we'll fetch all advertisements
                 setResolvedCategoryId(null);
                 setDisplayTitle('All Advertisements');
                 setIsCategoryResolved(true);

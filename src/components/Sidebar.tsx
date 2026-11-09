@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import categoryService, {type CategoryResponseDTO } from '../services/category/CategoryService.ts';
 
 const Sidebar: React.FC = () => {
@@ -10,6 +10,19 @@ const Sidebar: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+    const location = useLocation();
+    const [searchParams] = useSearchParams();
+
+    // Sync selectedCategory with the URL
+    useEffect(() => {
+        const catId = searchParams.get('categoryId');
+        if (catId) {
+            setSelectedCategory(catId);
+        } else {
+            // When no category is selected, default to null (All Advertisements)
+            setSelectedCategory(null);
+        }
+    }, [searchParams, location.pathname]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -87,6 +100,12 @@ const Sidebar: React.FC = () => {
         setIsMobileMenuOpen(false);
     };
 
+    const handleAllAdvertisementsSelect = () => {
+        setSelectedCategory(null);
+        navigate('/');
+        setIsMobileMenuOpen(false);
+    };
+
     const handleHowToPublishAds = () => {
         navigate('/howtopublishads');
         setIsMobileMenuOpen(false);
@@ -110,6 +129,36 @@ const Sidebar: React.FC = () => {
                     <div className="mt-2 text-center text-red-500">{error}</div>
                 ) : (
                     <ul className="mt-2 space-y-1">
+                        {/* All Advertisements Option */}
+                        <li key="all-advertisements">
+                            <button
+                                onClick={handleAllAdvertisementsSelect}
+                                className={`flex items-center w-full text-left p-1 rounded transition-all duration-200 cursor-pointer ${
+                                    selectedCategory === null
+                                        ? 'bg-pink-100 text-pink-700 shadow-sm font-semibold'
+                                        : 'hover:bg-pink-50 text-gray-700'
+                                }`}
+                            >
+                                <div className="relative mr-3">
+                                    <input
+                                        type="radio"
+                                        name="category"
+                                        checked={selectedCategory === null}
+                                        onChange={() => {}} // Controlled by button click
+                                        className="appearance-none w-4 h-4 border-2 border-gray-400 rounded-full cursor-pointer"
+                                    />
+                                    {selectedCategory === null && (
+                                        <div className="absolute inset-0 w-4 h-4 border-2 border-pink-500 rounded-full">
+                                            <div className="absolute inset-1 bg-pink-500 rounded-full"></div>
+                                        </div>
+                                    )}
+                                </div>
+                                <span className={selectedCategory === null ? 'text-pink-700 font-semibold' : 'text-gray-700'}>
+                                    🌟 All Advertisements
+                                </span>
+                            </button>
+                        </li>
+
                         {categories
                             .filter(category => category.activeStatus)
                             .map((category) => (

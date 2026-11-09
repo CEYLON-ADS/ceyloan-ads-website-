@@ -9,7 +9,7 @@ const Navbar = () => {
     const primaryRole = getUserPrimaryRole();
 
     const handleBrowseAll = () =>{
-        navigate("/girlspersonal");
+        navigate("/");
     }
 
     const handlePostAd = () =>{

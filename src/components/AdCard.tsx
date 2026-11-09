@@ -234,8 +234,26 @@ export default function AdCard({advertisements}: AdCardProps) {
         return pages;
     };
 
+    // Determine category title if filtered
+    const currentCategoryName = categoryId && internalAds.length > 0
+        ? (internalAds.find(ad => ad.categoryName)?.categoryName || 'Category')
+        : null;
+
     return (
         <div className="bg-white min-h-screen p-4">
+            {/* Header / Filter indicator */}
+            <div className="flex items-center justify-between pb-3 mb-4 border-b border-gray-200">
+                <div>
+                    <h2 className="text-xl font-bold text-gray-800">
+                        {currentCategoryName ? `${currentCategoryName} Advertisements` : 'All Advertisements'}
+                    </h2>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                        Showing {allCards.length} {allCards.length === 1 ? 'advertisement' : 'advertisements'}
+                        {!currentCategoryName && ' across all categories'}
+                    </p>
+                </div>
+            </div>
+
             {/* Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mx-auto mb-8">
                 {currentCards.length > 0 ? (
