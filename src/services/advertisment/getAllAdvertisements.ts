@@ -35,6 +35,7 @@ export interface Advertisement {
     categoryId: string;
     categoryName: string;
     fakeCount: number;
+    adType?: string;
     user?: {
         id: string;
         username: string;

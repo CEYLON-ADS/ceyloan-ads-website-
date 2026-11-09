@@ -22,9 +22,9 @@ const GirlsPersonal = () => {
 
             let response: PaginatedAdvertisementResponse;
             if (categoryId) {
-                response = await searchAdvertisementsByCategory(categoryId, '', 0, 10);
+                response = await searchAdvertisementsByCategory(categoryId, '', 0, 100);
             } else {
-                response = await searchAllAdvertisements('', 0, 10);
+                response = await searchAllAdvertisements('', 0, 100);
             }
 
             // Check if response has dataList property (the actual ads array)

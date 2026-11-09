@@ -1,38 +1,111 @@
 import {Heart, ThumbsUp, ChevronLeft, ChevronRight} from 'lucide-react';
-import {useNavigate} from 'react-router-dom';
-import {useState} from 'react';
-import type {Advertisement} from "../services/advertisment/getAllAdvertisements.ts";
+import {useNavigate, useSearchParams} from 'react-router-dom';
+import {useState, useEffect} from 'react';
+import {
+    searchAdvertisementsByCategory,
+    searchAllAdvertisements,
+    type Advertisement
+} from "../services/advertisment/getAllAdvertisements.ts";
 import {stripHtml} from "../utils/htmlUtils.ts";
 
 interface AdCardProps {
     advertisements?: Advertisement[]
 }
 
-// Helper functions moved outside the component
+// Detect if an advertisement is a Super Ad
+export const isSuperAd = (ad: Advertisement): boolean => {
+    const type = (ad.adType || '').toLowerCase().trim();
+    if (type.includes('super')) return true;
+
+    const cat = (ad.categoryName || '').toLowerCase().trim();
+    if (cat.includes('super') || cat.includes('premium')) return true;
+
+    if (ad.price && ad.price >= 1700) return true;
+
+    return false;
+};
+
+// Helper functions for badges
 const getBadgeType = (ad: Advertisement): string => {
-    // You can customize this logic based on your ad properties
-    if (ad.price && ad.price > 1000) return 'VIP Ad';
-    if (ad.categoryName?.toLowerCase().includes('premium')) return 'Super Ad';
+    if (isSuperAd(ad)) return 'Super Ad';
+    const type = (ad.adType || '').toLowerCase().trim();
+    if (type.includes('vip') || (ad.price && ad.price > 1000)) return 'VIP Ad';
     return 'Standard Ad';
 };
 
 const getBadgeColor = (ad: Advertisement): string => {
-    // You can customize this logic based on your ad properties
-    if (ad.price && ad.price > 1000) return 'bg-purple-600';
-    if (ad.categoryName?.toLowerCase().includes('premium')) return 'bg-orange-500';
+    const badge = getBadgeType(ad);
+    if (badge === 'Super Ad') return 'bg-orange-500';
+    if (badge === 'VIP Ad') return 'bg-purple-600';
     return 'bg-green-600';
 };
 
 // Get border color based on ad type
 const getBorderColor = (ad: Advertisement): string => {
-    if (ad.price && ad.price > 1000) return 'border-purple-500 hover:border-purple-600'; // VIP - Purple
-    if (ad.categoryName?.toLowerCase().includes('premium')) return 'border-orange-400 hover:border-orange-500'; // Super - Orange
-    return 'border-green-500 hover:border-green-600'; // Standard - Green
+    const badge = getBadgeType(ad);
+    if (badge === 'Super Ad') return 'border-orange-400 hover:border-orange-500 shadow-sm';
+    if (badge === 'VIP Ad') return 'border-purple-500 hover:border-purple-600';
+    return 'border-green-500 hover:border-green-600';
+};
+
+// Organize advertisements so that on each page of 10 ads:
+// - Up to the first 5 ads are Super Ads (if available)
+// - The other 5 ads are in order (regular ads)
+export const organizeAdsWithSuperAds = (
+    allAds: Advertisement[],
+    pageSize: number = 10,
+    maxSuperPerPage: number = 5
+): Advertisement[] => {
+    if (!allAds || allAds.length === 0) return [];
+
+    const superAds: Advertisement[] = [];
+    const regularAds: Advertisement[] = [];
+
+    allAds.forEach((ad) => {
+        if (isSuperAd(ad)) {
+            superAds.push(ad);
+        } else {
+            regularAds.push(ad);
+        }
+    });
+
+    // If there are no super ads, return regular ads in original order
+    if (superAds.length === 0) {
+        return regularAds;
+    }
+
+    const organized: Advertisement[] = [];
+    let superIndex = 0;
+    let regularIndex = 0;
+
+    while (superIndex < superAds.length || regularIndex < regularAds.length) {
+        let countThisPage = 0;
+
+        // 1. Take up to 5 super ads for this page
+        while (superIndex < superAds.length && countThisPage < maxSuperPerPage) {
+            organized.push(superAds[superIndex++]);
+            countThisPage++;
+        }
+
+        // 2. Fill the rest of the page (up to 10 total) with regular ads in order
+        while (regularIndex < regularAds.length && countThisPage < pageSize) {
+            organized.push(regularAds[regularIndex++]);
+            countThisPage++;
+        }
+
+        // 3. If regular ads run out, fill remaining slots with any extra super ads
+        while (superIndex < superAds.length && countThisPage < pageSize) {
+            organized.push(superAds[superIndex++]);
+            countThisPage++;
+        }
+    }
+
+    return organized;
 };
 
 // Format price with currency symbol
 const formatPrice = (price: number): string => {
-    return `$${price.toLocaleString()}`;
+    return `Rs. ${price.toLocaleString()}`;
 };
 
 // Calculate time ago from created date
@@ -46,19 +119,55 @@ const getTimeAgo = (dateString: string): string => {
     return `${Math.floor(diffInHours / 24)}d ago`;
 };
 
-export default function AdCard({advertisements = []}: AdCardProps) {
+export default function AdCard({advertisements}: AdCardProps) {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const [currentPage, setCurrentPage] = useState(1);
-    const cardsPerPage = 6; // Number of cards to show per page
+    const [internalAds, setInternalAds] = useState<Advertisement[]>(advertisements || []);
+    const cardsPerPage = 10; // 10 advertisements per page
 
-    // Use the actual advertisements data passed as props
-    const allCards = advertisements.map((ad, index) => ({
+    const categoryId = searchParams.get('categoryId');
+
+    // Auto-fetch if advertisements prop is not provided or empty
+    useEffect(() => {
+        if (advertisements && advertisements.length > 0) {
+            setInternalAds(advertisements);
+        } else {
+            const fetchFallbackAds = async () => {
+                try {
+                    let response;
+                    if (categoryId) {
+                        response = await searchAdvertisementsByCategory(categoryId, '', 0, 100);
+                    } else {
+                        response = await searchAllAdvertisements('', 0, 100);
+                    }
+                    if (response?.dataList) {
+                        setInternalAds(response.dataList);
+                    }
+                } catch (e) {
+                    console.error("Failed to auto-fetch ads in AdCard:", e);
+                }
+            };
+            fetchFallbackAds();
+        }
+    }, [advertisements, categoryId]);
+
+    // Reset to page 1 whenever ads change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [internalAds.length]);
+
+    // Organize ads with super ads (first 5 super ads, other 5 in order per page)
+    const organizedAds = organizeAdsWithSuperAds(internalAds, cardsPerPage, 5);
+
+    // Map to cards format
+    const allCards = organizedAds.map((ad, index) => ({
         id: ad.propertyId || `ad-${index}`,
         badge: getBadgeType(ad),
         badgeColor: getBadgeColor(ad),
         borderColor: getBorderColor(ad),
         imageUrl: ad.imageUrls && ad.imageUrls.length > 0 ? ad.imageUrls[0].url : '../../public/image1.png',
-        advertisement: ad // Store the full ad object for reference
+        advertisement: ad
     }));
 
     // Calculate pagination values

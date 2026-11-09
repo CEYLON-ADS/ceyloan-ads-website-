@@ -97,9 +97,9 @@ const CategoryPage: React.FC = () => {
 
             let response: PaginatedAdvertisementResponse;
             if (catId) {
-                response = await searchAdvertisementsByCategory(catId, '', 0, 20);
+                response = await searchAdvertisementsByCategory(catId, '', 0, 100);
             } else {
-                response = await searchAllAdvertisements('', 0, 20);
+                response = await searchAllAdvertisements('', 0, 100);
             }
             const adsArray = response?.dataList || [];
             setAdvertisements(adsArray);
