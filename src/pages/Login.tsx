@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { sendOTP } from "../services/sendOTP.ts";
+import { loginWithPhone } from "../services/sendOTP.ts";
 import { loginWithPassword, registerWithPassword } from "../services/authPassword.ts";
 import { login, verifyUser } from "../interceptor/interceptor.ts";
+import { saveToken, saveUserId } from "../services/verifyOTP.ts";
 
 const LoginRegisterForm: React.FC = () => {
     const [loginMode, setLoginMode] = useState<"otp" | "password">("otp");
@@ -19,7 +20,7 @@ const LoginRegisterForm: React.FC = () => {
 
     const navigate = useNavigate();
 
-    const handleSendOTP = async () => {
+    const handlePhoneLogin = async () => {
         setError("");
         setSuccessMessage("");
 
@@ -37,23 +38,36 @@ const LoginRegisterForm: React.FC = () => {
         setLoading(true);
 
         try {
-            const fullPhoneNumber = countryCode + phoneNumber.replace(/\s+/g, '');
-            console.log("Sending OTP to:", fullPhoneNumber);
+            const cleanPhone = phoneNumber.replace(/\s+/g, '');
+            const fullPhoneNumber = countryCode + cleanPhone;
 
-            const result = await sendOTP(fullPhoneNumber);
+            const result = await loginWithPhone(cleanPhone, countryCode);
 
-            if (result.success) {
-                setSuccessMessage(result.message);
+            if (result.success && result.data?.token) {
+                setSuccessMessage("Login successful! Redirecting...");
+
+                login(result.data.token, true);
+                saveToken(result.data.token);
+                if (result.data.userId) {
+                    saveUserId(result.data.userId);
+                }
+                verifyUser();
                 sessionStorage.setItem('phoneNumber', fullPhoneNumber);
 
                 setTimeout(() => {
-                    navigate('/verification');
-                }, 1500);
+                    const searchParams = new URLSearchParams(window.location.search);
+                    const returnUrl = searchParams.get('returnUrl');
+                    if (returnUrl) {
+                        navigate(decodeURIComponent(returnUrl));
+                    } else {
+                        navigate(`/adDashboard?phoneNumberSend=${encodeURIComponent(fullPhoneNumber)}`);
+                    }
+                }, 1000);
             } else {
-                setError(result.message || "Failed to send OTP. Please try again.");
+                setError(result.error || result.message || "Failed to login. Please try again.");
             }
         } catch (err) {
-            console.error("Error sending OTP:", err);
+            console.error("Error during phone login:", err);
             setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
@@ -84,13 +98,23 @@ const LoginRegisterForm: React.FC = () => {
 
                 if (result.data?.token) {
                     login(result.data.token, true);
+                    saveToken(result.data.token);
+                }
+                if (result.data?.userId) {
+                    saveUserId(result.data.userId);
                 }
 
                 verifyUser();
 
                 setTimeout(() => {
-                    navigate('/adDashboard');
-                }, 1500);
+                    const searchParams = new URLSearchParams(window.location.search);
+                    const returnUrl = searchParams.get('returnUrl');
+                    if (returnUrl) {
+                        navigate(decodeURIComponent(returnUrl));
+                    } else {
+                        navigate('/adDashboard');
+                    }
+                }, 1000);
             } else {
                 setError(result.message || "Failed to login. Please try again.");
             }
@@ -172,7 +196,7 @@ const LoginRegisterForm: React.FC = () => {
                     }`}
                     disabled={loading}
                 >
-                    WhatsApp OTP
+                    Mobile Login
                 </button>
                 <button
                     onClick={() => { setError(""); setSuccessMessage(""); setLoginMode("password"); setIsSignUp(false); }}
@@ -207,7 +231,7 @@ const LoginRegisterForm: React.FC = () => {
                     <div>
                         <h2 className="text-lg font-semibold text-gray-800 mb-2">Enter Phone Number</h2>
                         <p className="text-gray-600 text-sm mb-4">
-                            ඔබගේ දුරකතන අංකය ඇතුලත් කර <span className="font-semibold">Send OTP</span> Click කරන්න.
+                            ඔබගේ දුරකතන අංකය ඇතුලත් කර <span className="font-semibold">Login / Post Ad</span> Click කරන්න.
                         </p>
                     </div>
 
@@ -240,9 +264,9 @@ const LoginRegisterForm: React.FC = () => {
                         />
                     </div>
 
-                    {/* Send OTP Button */}
+                    {/* Login / Post Ad Button */}
                     <button
-                        onClick={handleSendOTP}
+                        onClick={handlePhoneLogin}
                         disabled={loading}
                         className="w-full bg-red-600 text-white py-3 px-4 rounded-md font-semibold hover:bg-red-700 transition duration-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center cursor-pointer"
                     >
@@ -252,10 +276,10 @@ const LoginRegisterForm: React.FC = () => {
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                Sending OTP...
+                                Logging in...
                             </>
                         ) : (
-                            "Send OTP"
+                            "Login / Post Ad"
                         )}
                     </button>
                 </div>

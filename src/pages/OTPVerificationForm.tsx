@@ -209,7 +209,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { verifyOTP } from "../services/verifyOTP.ts";
 import { sendOTP } from "../services/sendOTP.ts";
-import { login, verifyUser } from "../interceptor/interceptor.ts"; // Import auth functions
+import { login, verifyUser, isAuthenticated } from "../interceptor/interceptor.ts"; // Import auth functions
 
 const OTPVerificationForm: React.FC = () => {
     const [verificationCode, setVerificationCode] = useState("");
@@ -223,6 +223,12 @@ const OTPVerificationForm: React.FC = () => {
     const location = useLocation();
 
     useEffect(() => {
+        if (isAuthenticated()) {
+            const storedPhone = sessionStorage.getItem('phoneNumber') || '';
+            navigate(`/adDashboard?phoneNumberSend=${encodeURIComponent(storedPhone)}`, { replace: true });
+            return;
+        }
+
         // Get phone number from sessionStorage
         const storedPhoneNumber = sessionStorage.getItem('phoneNumber');
 

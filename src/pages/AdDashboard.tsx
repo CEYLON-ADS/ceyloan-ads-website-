@@ -20,7 +20,7 @@ const AdTypeSelection: React.FC = () => {
     const [selectedCategoryName, setSelectedCategoryName] = useState<string>("");
 
     const [searchParams] = useSearchParams();
-    const phoneNumberSend: string = searchParams.get('phoneNumberSend') as string;
+    const phoneNumberSend: string = (searchParams.get('phoneNumberSend') || sessionStorage.getItem('phoneNumber') || "") as string;
 
 
 

@@ -13,11 +13,9 @@ export const isAuthenticated = (): boolean => {
     return !!token;
 };
 
-// Check if user is verified
+// Check if user is verified (always true if authenticated as OTP is no longer required)
 export const isVerified = (): boolean => {
-    const verified = localStorage.getItem('isVerified') === 'true' ||
-        Cookies.get('isVerified') === 'true';
-    return verified;
+    return isAuthenticated();
 };
 
 // Clear auth data
